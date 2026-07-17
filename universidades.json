@@ -51,7 +51,7 @@
     },
     {
       "nombre": "U. San Sebastián",
-      "ponderaciones": { "nem": 20, "ranking": 20, "lenguaje": 10, "m1": 25, "ciencias": 25 }
+      "ponderaciones": { "nem": 10, "ranking": 10, "lenguaje": 30, "m1": 40, "ciencias": 10 }
     }
   ]
 }

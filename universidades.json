@@ -1,0 +1,57 @@
+{
+  "_nota": "Ponderaciones en porcentaje. Deben sumar 100. Valores REFERENCIALES: verificar contra la oferta oficial DEMRE de cada proceso de admisión antes de confiar en la simulación. Para agregar una universidad, copiar un bloque y editar.",
+  "universidades": [
+    {
+      "nombre": "U. de Chile",
+      "ponderaciones": { "nem": 10, "ranking": 20, "lenguaje": 10, "m1": 30, "ciencias": 30 }
+    },
+    {
+      "nombre": "P. U. Católica de Chile",
+      "ponderaciones": { "nem": 20, "ranking": 20, "lenguaje": 10, "m1": 20, "ciencias": 30 }
+    },
+    {
+      "nombre": "U. de Santiago de Chile",
+      "ponderaciones": { "nem": 10, "ranking": 25, "lenguaje": 10, "m1": 25, "ciencias": 30 }
+    },
+    {
+      "nombre": "U. de Concepción",
+      "ponderaciones": { "nem": 10, "ranking": 20, "lenguaje": 10, "m1": 25, "ciencias": 35 }
+    },
+    {
+      "nombre": "U. de Valparaíso",
+      "ponderaciones": { "nem": 10, "ranking": 25, "lenguaje": 10, "m1": 25, "ciencias": 30 }
+    },
+    {
+      "nombre": "U. Austral de Chile",
+      "ponderaciones": { "nem": 10, "ranking": 25, "lenguaje": 10, "m1": 25, "ciencias": 30 }
+    },
+    {
+      "nombre": "U. de La Frontera",
+      "ponderaciones": { "nem": 15, "ranking": 25, "lenguaje": 10, "m1": 25, "ciencias": 25 }
+    },
+    {
+      "nombre": "U. de los Andes",
+      "ponderaciones": { "nem": 20, "ranking": 20, "lenguaje": 10, "m1": 25, "ciencias": 25 }
+    },
+    {
+      "nombre": "U. del Desarrollo",
+      "ponderaciones": { "nem": 20, "ranking": 20, "lenguaje": 10, "m1": 20, "ciencias": 30 }
+    },
+    {
+      "nombre": "U. Finis Terrae",
+      "ponderaciones": { "nem": 20, "ranking": 20, "lenguaje": 10, "m1": 25, "ciencias": 25 }
+    },
+    {
+      "nombre": "U. Diego Portales",
+      "ponderaciones": { "nem": 15, "ranking": 25, "lenguaje": 10, "m1": 25, "ciencias": 25 }
+    },
+    {
+      "nombre": "U. de Talca",
+      "ponderaciones": { "nem": 10, "ranking": 25, "lenguaje": 10, "m1": 25, "ciencias": 30 }
+    },
+    {
+      "nombre": "U. San Sebastián",
+      "ponderaciones": { "nem": 20, "ranking": 20, "lenguaje": 10, "m1": 25, "ciencias": 25 }
+    }
+  ]
+}

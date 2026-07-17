@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador PAES · Medicina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1416;
+    --panel:#101D20;
+    --line:#1E3236;
+    --ink:#D7E4E2;
+    --muted:#6E8A88;
+    --accent:#3FE0A8;        /* verde monitor */
+    --accent-dim:#1C6B52;
+    --warn:#F2B33D;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:'Archivo',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    display:flex;
+    justify-content:center;
+    padding:2.5rem 1rem 4rem;
+  }
+  .app{width:100%;max-width:520px}
+
+  /* ---------- selector de universidad ---------- */
+  .uni-select{position:relative;text-align:center;margin-bottom:.4rem}
+  .uni-btn{
+    background:none;border:none;cursor:pointer;
+    color:var(--muted);
+    font:600 .8rem/1 var(--mono);
+    letter-spacing:.18em;text-transform:uppercase;
+    padding:.5rem .9rem;
+    display:inline-flex;align-items:center;gap:.55rem;
+    transition:color .15s;
+  }
+  .uni-btn:hover,.uni-btn:focus-visible{color:var(--ink)}
+  .uni-btn:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+  .uni-btn .caret{
+    display:inline-block;width:.5em;height:.5em;
+    border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+    transform:rotate(45deg) translateY(-.15em);
+    transition:transform .15s;
+  }
+  .uni-select.open .caret{transform:rotate(-135deg) translateY(-.1em)}
+  .uni-menu{
+    position:absolute;left:50%;transform:translateX(-50%);
+    top:calc(100% + .4rem);z-index:10;
+    min-width:280px;max-height:300px;overflow-y:auto;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:.35rem;
+    display:none;
+    box-shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+  .uni-select.open .uni-menu{display:block}
+  .uni-menu button{
+    display:block;width:100%;text-align:left;
+    background:none;border:none;cursor:pointer;
+    color:var(--ink);
+    font:500 .85rem/1.3 var(--sans);
+    padding:.55rem .7rem;border-radius:5px;
+  }
+  .uni-menu button:hover,.uni-menu button:focus-visible{background:var(--line);outline:none}
+  .uni-menu button[aria-selected="true"]{color:var(--accent)}
+
+  /* ---------- puntaje ---------- */
+  .score-wrap{text-align:center;margin-bottom:2.2rem}
+  .score{
+    font:600 clamp(4rem,18vw,5.8rem)/1 var(--mono);
+    font-variant-numeric:tabular-nums;
+    color:var(--accent);
+    text-shadow:0 0 24px rgba(63,224,168,.25);
+  }
+  .score .dec{font-size:.42em;color:var(--accent-dim)}
+  .score-label{
+    margin-top:.5rem;
+    font:500 .68rem/1 var(--mono);
+    letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted);
+  }
+  .warn{
+    display:none;
+    margin-top:.7rem;
+    font:500 .72rem/1.4 var(--mono);
+    color:var(--warn);
+  }
+  .warn.visible{display:block}
+
+  /* ---------- sliders ---------- */
+  .sliders{display:flex;flex-direction:column;gap:1.35rem}
+  .row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem 1.05rem}
+  .row-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:.65rem;
+  }
+  .row-head label{font:600 .82rem/1 var(--sans);letter-spacing:.04em}
+  .row-head .pond{
+    font:400 .68rem/1 var(--mono);
+    color:var(--muted);margin-left:.55rem;
+  }
+  .row-head output{
+    font:600 1rem/1 var(--mono);
+    font-variant-numeric:tabular-nums;
+    color:var(--accent);
+  }
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:22px;background:transparent;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track{
+    height:4px;border-radius:2px;
+    background:linear-gradient(to right,var(--accent) var(--fill,66%),var(--line) var(--fill,66%));
+  }
+  input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--line)}
+  input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--accent)}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:18px;height:18px;border-radius:50%;
+    background:var(--ink);border:3px solid var(--accent);
+    margin-top:-7px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:12px;height:12px;border-radius:50%;
+    background:var(--ink);border:3px solid var(--accent);
+  }
+  input[type=range]:focus-visible{outline:1px solid var(--accent);outline-offset:4px;border-radius:4px}
+
+  .foot{
+    margin-top:2.4rem;text-align:center;
+    font:400 .66rem/1.6 var(--mono);color:var(--muted);
+  }
+  .foot code{color:var(--ink)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="uni-select" id="uniSelect">
+    <button class="uni-btn" id="uniBtn" aria-haspopup="listbox" aria-expanded="false">
+      <span id="uniName">Cargando…</span><span class="caret" aria-hidden="true"></span>
+    </button>
+    <div class="uni-menu" id="uniMenu" role="listbox" aria-label="Universidad"></div>
+  </div>
+
+  <div class="score-wrap">
+    <div class="score" id="score" aria-live="polite">—</div>
+    <div class="score-label">puntaje ponderado</div>
+    <div class="warn" id="warn"></div>
+  </div>
+
+  <div class="sliders" id="sliders"></div>
+
+  <p class="foot">ponderaciones editables en <code>universidades.json</code> · escala 100–1000<br>valores referenciales — verificar en DEMRE</p>
+</main>
+
+<script>
+"use strict";
+
+/* Factores mostrados. Para agregar M2 u otro: añadir aquí y en universidades.json */
+const FACTORES = [
+  { key: "nem",      label: "NEM" },
+  { key: "ranking",  label: "Ranking" },
+  { key: "m1",       label: "Matemática 1 (M1)" },
+  { key: "lenguaje", label: "Comp. Lectora" },
+  { key: "ciencias", label: "Ciencias" },
+];
+const MIN = 100, MAX = 1000, INICIAL = 700;
+
+let unis = [];
+let uniActual = null;
+const puntajes = Object.fromEntries(FACTORES.map(f => [f.key, INICIAL]));
+
+const $ = id => document.getElementById(id);
+const scoreEl = $("score"), warnEl = $("warn"),
+      uniSelect = $("uniSelect"), uniBtn = $("uniBtn"),
+      uniNameEl = $("uniName"), uniMenu = $("uniMenu"),
+      slidersEl = $("sliders");
+
+/* ---------- carga de datos ---------- */
+fetch("universidades.json")
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => {
+    unis = data.universidades;
+    uniActual = unis[0];
+    construirMenu();
+    construirSliders();
+    render();
+  })
+  .catch(() => {
+    uniNameEl.textContent = "Error de datos";
+    warnEl.textContent = "No se pudo leer universidades.json. Servir por HTTP (python3 -m http.server), no abrir con file://";
+    warnEl.classList.add("visible");
+  });
+
+/* ---------- dropdown ---------- */
+function construirMenu() {
+  uniMenu.innerHTML = "";
+  unis.forEach((u, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.role = "option";
+    b.textContent = u.nombre;
+    b.setAttribute("aria-selected", u === uniActual);
+    b.addEventListener("click", () => {
+      uniActual = unis[i];
+      cerrarMenu();
+      construirMenu();
+      render();
+    });
+    uniMenu.appendChild(b);
+  });
+}
+function cerrarMenu() {
+  uniSelect.classList.remove("open");
+  uniBtn.setAttribute("aria-expanded", "false");
+}
+uniBtn.addEventListener("click", () => {
+  const abierto = uniSelect.classList.toggle("open");
+  uniBtn.setAttribute("aria-expanded", abierto);
+});
+document.addEventListener("click", e => { if (!uniSelect.contains(e.target)) cerrarMenu(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarMenu(); });
+
+/* ---------- sliders ---------- */
+function construirSliders() {
+  slidersEl.innerHTML = "";
+  FACTORES.forEach(f => {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <div class="row-head">
+        <span><label for="s-${f.key}">${f.label}</label><span class="pond" id="p-${f.key}"></span></span>
+        <output id="o-${f.key}">${INICIAL}</output>
+      </div>
+      <input type="range" id="s-${f.key}" min="${MIN}" max="${MAX}" step="1" value="${INICIAL}">`;
+    slidersEl.appendChild(row);
+    const input = row.querySelector("input");
+    input.addEventListener("input", () => {
+      puntajes[f.key] = Number(input.value);
+      render();
+    });
+  });
+}
+
+/* ---------- cálculo y render ---------- */
+function ponderado() {
+  const p = uniActual.ponderaciones;
+  let suma = 0;
+  for (const f of FACTORES) suma += (puntajes[f.key] * (p[f.key] ?? 0)) / 100;
+  return suma;
+}
+
+function render() {
+  if (!uniActual) return;
+  const p = uniActual.ponderaciones;
+  uniNameEl.textContent = uniActual.nombre;
+
+  const total = FACTORES.reduce((s, f) => s + (p[f.key] ?? 0), 0);
+  if (total !== 100) {
+    warnEl.textContent = `⚠ ponderaciones suman ${total}% (revisar universidades.json)`;
+    warnEl.classList.add("visible");
+  } else {
+    warnEl.classList.remove("visible");
+  }
+
+  const valor = ponderado().toFixed(2);
+  const [ent, dec] = valor.split(".");
+  scoreEl.innerHTML = `${ent}<span class="dec">.${dec}</span>`;
+
+  for (const f of FACTORES) {
+    $("p-" + f.key).textContent = `· ${p[f.key] ?? 0}%`;
+    $("o-" + f.key).textContent = puntajes[f.key];
+    const input = $("s-" + f.key);
+    input.style.setProperty("--fill", ((puntajes[f.key] - MIN) / (MAX - MIN) * 100) + "%");
+  }
+}
+</script>
+</body>
+</html>
